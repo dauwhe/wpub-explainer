@@ -167,7 +167,7 @@ If an publication context is created as a result of the user agent being asked t
 
 Users need to find their way around all the content in a web publication. This involves everything from “turning the page” to finding a table of contents.
 
-### Moving through the primary resources
+### Moving through the default reading order
 
 
 A web publication has a default reading order, and it should be easy for the reader to see everything in sequence. A user agent must provide means to go to the previous or next resource in the default reading order. 
@@ -184,7 +184,7 @@ A user agent **must** provide a way for the user to explicitly cause the publica
 
 
 
-### Table of Contents
+### Accessing the table of contents
 
 A table of contents is critical for accessing and understanding the components of a web publication. A web publication **should** have a table of contents, with a `nav` element which **should** include entries for all main resources, at least.
 
@@ -194,6 +194,8 @@ If a table of contents exists, the user agent **must** provide a way to reach th
 ## Content Model
 
 Whatever works on the web. In particular, unlike EPUB, the HTML serialization of HTML5 is encouraged.
+
+> Note: there is no list of core media types. 
 
 ## Synchronized media 
 
