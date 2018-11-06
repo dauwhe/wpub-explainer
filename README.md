@@ -2,6 +2,8 @@
 
 ## Introduction
 
+> is the goal of this group to make a new packaging format for specialist book reading software and devices, or is it to obtain first class support for missing book-related features in the web platform as a whole?
+
 What is a web publication? A web publication is not a single thing, but rather a loose collection of behaviors which, taken together, make it easier for users to read long, possibly complex documents. 
 
 Two things make web publications different from the “ordinary” web we know and love. One is that a web publication may consist of multiple resources that form a logical whole. Moby-Dick could consist of 136 HTML files in a specified order, but it’s still a single work. So searching should search all 136 chapters.
@@ -110,9 +112,24 @@ Membership in a publication could also be defined using `scope`, as WAM does.
 
 The PWG has decided to use a different approach, using lists linked from (or embedded in) HTML to both identify the consituents of a publication and define an ordering. In EPUB such information was defined in a "package" file and serialized in XML. As mentioned above, WPUB uses a "manifest" file which is serialized as JSON-LD. 
 
+
+#### Exhaustive lists of resources
+
+Web pages, web sites, and web applications typically don't include a list of referenced resources, like images, stylesheets, and fonts. EPUB does require such an exhaustive list. The argument has been that offline use cases require such a list, to be provided to a service worker, although counterexamples exist. 
+
 ### Relationship to Web Application Manifest
 
-The Web Publication Manifest appears to be very similar to the Web Application Manifest. Both are JSON files that are linked to from HTML, and provide metadata about a composite resource. 
+The Web Publication Manifest appears to be very similar to the Web Application Manifest. Both are JSON files that are linked to from HTML, and provide metadata about a composite resource. Several arguments have been made against using WAM. See also [this](https://github.com/w3c/wpub/wiki/Options-for-Processing-a-Manifest) and [this](https://github.com/w3c/wpub/issues/32).
+
+But note that the [TAG has spoken](https://github.com/w3c/wpub/issues/32#issuecomment-362273649)!
+
+
+
+1. WP use cases are orthogonal to those of WAM. Nothing is stopping a creator of a web publication from also using a web application manifest, if the publication author desires for the publication to be installable, etc. 
+
+2. The web application manifest spec is not designed to be extensible. 
+
+3. Web publications are fundamentally different from web apps, as the goal is for the user agent to provide the user interface. 
 
 
 
@@ -122,13 +139,15 @@ The Web Publication Manifest appears to be very similar to the Web Application M
 
 ### Linking to a manifest
 
-To link to a manifest, use the [HTML](https://www.w3.org/TR/appmanifest/#dfn-link-element) `link` element with the `rel` attribute set to `manifest`:
+To link to a manifest, use the [HTML](https://www.w3.org/TR/appmanifest/#dfn-link-element) `link` element with the `rel` attribute set to `publication`:
 
 ```html
-<link rel="manifest" href="manifest.json">
+<link rel="publication" href="manifest.json">
 ```
 
 > Note: If you have more than one link to the manifest, the first one will be used.
+
+It's possible to embed a manifest in a `script` element in HTML. Among other things, this makes it possible to have a single-resource web publication. Some people think the manifest [should be required to be embedded](https://github.com/w3c/wpub/issues/327) in the HTML document at the URL of the publication.
 
 
 ## Launching a web publication
