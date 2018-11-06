@@ -33,11 +33,13 @@ Thus the goal of web publications is to provide the information necessary to pro
  
  - DRM
  
-## The manifest
+## Basic design
 
-A “manifest” is a list of the passengers or cargo on a ship. We need a list of the components of a web publication—all the HTML files, stylesheets, images, scripts, etc. needed to create the whole. We also need a special list of the files that go in a particular order. In EPUB we called this the "spine". We can call this the "default reading order." 
+A web publication must have an "entry page," which the HTML document returned by the URL of the publication. This entry page must have either a link to the manifest, or an embedded manifest. 
 
-In order to placate the web developers who seemingly rule the world, the manifest is expressed as a JSON file. The manifest is also a natural location for metadata that applies to the whole publication, rather than just one of the components. 
+A “manifest” is a list of the passengers or cargo on a ship. We want a list of the components of a web publication—all the HTML files, stylesheets, images, scripts, etc.—needed to create the whole. We need a special list of the files that go in a particular order. In EPUB we called this the "spine". We call this the `readingOrder`. 
+
+In order to placate the web developers who seemingly rule the world, the manifest is expressed as a JSON file. The manifest is also a natural location for metadata that applies to the whole publication, rather than just one of the constituents. 
 
 
 ## Example
@@ -119,9 +121,7 @@ Web pages, web sites, and web applications typically don't include a list of ref
 
 ### Relationship to Web Application Manifest
 
-The Web Publication Manifest appears to be very similar to the Web Application Manifest. Both are JSON files that are linked to from HTML, and provide metadata about a composite resource. Several arguments have been made against using WAM. See also [this](https://github.com/w3c/wpub/wiki/Options-for-Processing-a-Manifest) and [this](https://github.com/w3c/wpub/issues/32).
-
-But note that the [TAG has spoken](https://github.com/w3c/wpub/issues/32#issuecomment-362273649)!
+The Web Publication Manifest appears to be very similar to the Web Application Manifest. Both are JSON files that are linked to from HTML, and provide metadata about a composite resource. Several arguments have been made against using WAM. See also [this](https://github.com/w3c/wpub/wiki/Options-for-Processing-a-Manifest) and [this](https://github.com/w3c/wpub/issues/32). But note that the [TAG has spoken](https://github.com/w3c/wpub/issues/32#issuecomment-362273649)!
 
 
 
@@ -130,10 +130,6 @@ But note that the [TAG has spoken](https://github.com/w3c/wpub/issues/32#issueco
 2. The web application manifest spec is not designed to be extensible. 
 
 3. Web publications are fundamentally different from web apps, as the goal is for the user agent to provide the user interface. 
-
-
-
-
 
 
 
