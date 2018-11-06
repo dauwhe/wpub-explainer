@@ -2,9 +2,7 @@
 
 ## Introduction
 
-What is a publication? 
-
-A web publication is not a single thing, but rather a loose collection of behaviors which, taken together, make it easier for users to read long, possibly complex documents. 
+What is a web publication? A web publication is not a single thing, but rather a loose collection of behaviors which, taken together, make it easier for users to read long, possibly complex documents. 
 
 Two things make web publications different from the “ordinary” web we know and love. One is that a web publication may consist of multiple resources that form a logical whole. Moby-Dick could consist of 136 HTML files in a specified order, but it’s still a single work. So searching should search all 136 chapters.
 
@@ -12,122 +10,114 @@ More importantly, users have a set of expectations about how such content should
 
 Thus the goal of web publications is to provide the information necessary to provide these features ("affordances") to readers. We hope that someday browsers will provide these features, but in the meantime we have to use scripting. That's OK, because we'll learn a lot from trying, and that will help the spec get better.
 
+## Goals
 
-## Manifest & Metadata
+ 
+- Provide a mechanism for defining a collection of web resources as a publication 
+ 
+- Provide a mechanism for ascribing descriptive metadata to the collection of web resources.
 
-We must answer two fundamental questions about any given web publication:
+- Provide a mechanism for defining an ordering of the resources in a publication
 
-1. What are the pieces?
+ 
+ 
+## Non-goals
 
-2. How do the pieces fit together? Do some of the pieces have to be in a certain order?
+ - Issues of layout, such as pagination
+ 
+ - The equivalent of fixed-layout publications in EPUB
+ 
+ - The equivalent of multiple-rendition publications in EPUB
+ 
+ - DRM
+ 
+## The manifest
 
-A "manifest" is a list of the passengers or cargo on a ship. We need a list of the components of a web publication—all the HTML files, stylesheets, images, scripts, etc. needed to create the whole. We also need a special list of the files that go in a particular order. In EPUB we called this the "spine". We can call this the "default reading order." 
+A “manifest” is a list of the passengers or cargo on a ship. We need a list of the components of a web publication—all the HTML files, stylesheets, images, scripts, etc. needed to create the whole. We also need a special list of the files that go in a particular order. In EPUB we called this the "spine". We can call this the "default reading order." 
 
 In order to placate the web developers who seemingly rule the world, the manifest is expressed as a JSON file. The manifest is also a natural location for metadata that applies to the whole publication, rather than just one of the components. 
 
-Here's a simple example, for a tiny version of *Moby-Dick* with only three HTML files:
+
+## Example
+
+Here's a simple example, for a tiny version of *Moby-Dick* with only a few HTML files:
 
 ```json
 {
-	"metadata": {
-		"@type": "http://schema.org/Book",
-		"title": "Moby-Dick",
-		"author": "Herman Melville",
-		"identifier": "urn:uuid:5740a60e-8da1-11e7-bb31-be2e44b06b34",
-		"language": "en",
-		"modified": "2015-09-29T17:00:00Z"
-	},
+    "@context": ["https://schema.org", "https://www.w3.org/ns/wp-context"],
+    "type": "Book",
+    "url": "https://publisher.example.org/mobydick",
+    "author": "Herman Melville",
+    "dateModified": "2018-02-10T17:00:00Z",
 
-	"links": [{
-		"rel": "self",
-		"href": "https://dauwhe.github.io/MobyDickNav/"
-	}],
-	"spine": [{
-			"href": "index.html",
-			"type": "text/html"
-		},
-		{
-			"href": "html/c001.html",
-			"type": "text/html"
-		},
-		{
-			"href": "html/c002.html",
-			"type": "text/html"
-		},
-		{
-			"href": "html/c003.html",
-			"type": "text/html"
-		}
-	],
-	"resources": [{
-			"href": "css/mobydick.css",
-			"type": "text/css"
-		},
-		{
-			"href": "js/shim.js",
-			"type": "application/javascript"
-		}
-	],
-	"contents": "https://dauwhe.github.io/MobyDickNav/"
+    "readingOrder": [
+        "html/title.html",
+        "html/copyright.html",
+        "html/introduction.html",
+        "html/epigraph.html",
+        "html/c001.html",
+        "html/c002.html",
+        "html/c003.html",
+        "html/c004.html",
+        "html/c005.html",
+        "html/c006.html"
+    ],
+
+    "resources": [
+        "css/mobydick.css",
+        {
+            "type": "PublicationLink",
+            "rel": "https://www.w3.org/ns/wp#cover-page",
+            "url": "images/cover.jpg",
+            "encodingFormat": "image/jpeg"
+        },{
+            "type": "PublicationLink",
+            "url": "html/toc.html",
+            "rel": "contents"
+        },{
+            "type": "PublicationLink",
+            "url": "fonts/STIXGeneral.otf",
+            "encodingFormat": "application/vnd.ms-opentype"
+        },{
+            "type": "PublicationLink",
+            "url": "fonts/STIXGeneralBol.otf",
+            "encodingFormat": "application/vnd.ms-opentype"
+        },{
+            "type": "PublicationLink",
+            "url": "fonts/STIXGeneralBolIta.otf",
+            "encodingFormat": "application/vnd.ms-opentype"
+        },{
+            "type": "PublicationLink",
+            "url": "fonts/STIXGeneralItalic.otf",
+            "encodingFormat": "application/vnd.ms-opentype"
+        }
+    ]
 }
 
 ```
 
-Let's take a look at the various "members" of the manifest.
+`readingOrder` defines the sequence of resources that form the publication. `resources` enumerates all the other resources that are required to render the publication. Schema.org is used for most publication metadata. 
 
-> Issue: why does web app manifest use the word "members"?
+## Design choices
 
-### 1. Kind
+### Structural
 
-Our first requirement is to identify our publication as a web publication. We can use the book emoji, or the simpler-to-type `book`. 
+The key questions are [1] identifying which resources form the publication and [2] defining an ordering of primary resources. 
 
-### 2. Name
+One possibility is **transclusion**, having a single resource which contains all the other resources. XML has often used such an approach, and it can be expressed in HTML in several ways, from HTML imports to iframes.
 
-The name or title of the web publication. We use "name" to be compatible with [Web Application Manifest](https://www.w3.org/TR/appmanifest/)
+Membership in a publication could also be defined using `scope`, as WAM does. 
 
-### 3. Lang
+The PWG has decided to use a different approach, using lists linked from (or embedded in) HTML to both identify the consituents of a publication and define an ordering. In EPUB such information was defined in a "package" file and serialized in XML. As mentioned above, WPUB uses a "manifest" file which is serialized as JSON-LD. 
 
-This is the language of the manifest. 
+### Relationship to Web Application Manifest
 
-> Issue: Should this be the language that any user interface for the book is presented in?
-
-> Issue: What about multi-language publications?
-
-### 4. Locator
-
-This is the URL of the Web Publication itself, wherever it may be currently hosted. It’s like if you went off to college, and this is your local address.
-
-### 5. Address
-
-This is the original, permanent address of the web publication. It may be the same as `locator`. 
-
-### 6. Identifier
-
-A unique identifier for the web publication. This might be an ISBN or other non-resolvable identifer. 
-
-### 7. Spine
-
-This is an ordered list of the main resources in a publication, analogous to the `spine` in EPUB. This forms the default reading order. 
-
-> Issue: I find the term `spine` non-intuitive, but I seem to be the only one.
+The Web Publication Manifest appears to be very similar to the Web Application Manifest. Both are JSON files that are linked to from HTML, and provide metadata about a composite resource. 
 
 
 
 
-### 8. Resources
 
-This is a list of all the other resources that are a part of the publication. No need to list `main` resources again.
-
-> Note: These resources could be HTML documents, if they are not part of a "default reading order".
-
-### 9. Contents
-
-This lists the URL of the publication’s table of contents (i.e. `nav` file). 
-
-
-## Associating a resource with a manifest
-
-The HTML files in our web publication need to be linked with the manifest.
 
 
 ### Linking to a manifest
@@ -183,43 +173,11 @@ A table of contents is critical for accessing and understanding the components o
 If a table of contents exists, the user agent **must** provide a way for the user to request the table of contents and have it displayed in some form. 
 
 
-## Content Model
-
-Whatever works on the web. In particular, unlike EPUB, the HTML serialization of HTML5 is encouraged.
-
-> Note: there is no list of core media types. 
-
-## Synchronized media 
 
 
-## Implementation issues
-### Local storage
-### Service workers
-### Packaging
-
-The web packaging spec is designed around HTTP requests and responses, which among other things means that you must know the media type of a resource to package it.
-	
-## Scripting
-
-	Defer; unknown if this will be needed (maybe in PWP or EPUB4)
-
-## Page transition
-	Defer; unknown if this will be needed
-	
-## Personalization
-	User to reading environment
-	Author to reading environment
-	
-## Security
 
 
-### Scripting
 
-### Integrity
-
-## Privacy
-
-## Archiving
 
 
 
