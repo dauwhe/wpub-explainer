@@ -119,6 +119,22 @@ The key questions are [1] identifying the "bounds" of the publication, [2] defin
 
 - XML sometimes uses the idea of *transclusion*, where the contents of other documents can be incorporated into a parent document based on hypertext references. This concept can also be realized in HTML using iframes, HTML imports, custom elements, etc. 
 
+```html
+<html>
+  <head>
+    <title>Moby-Dick</title>
+  </head>
+  <body>
+    <web-publication>
+      <iframe src="c001.html">
+      <iframe src="c002.html">
+      <iframe src="c003.html">
+    </web-publication>
+  </body>
+</html>
+
+```
+
 The web publications spec has essentially adopted EPUB's approach, with an explicit list of resources. Anything that is not part of the `resources` or `readingOrder` manifest members is considered to be outside the web publication. 
 
 ### 2. Sequence of primary resources
