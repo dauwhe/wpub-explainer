@@ -8,7 +8,7 @@ The unanswered question:
 
 What is a web publication? A web publication is not a single thing, but rather a loose collection of behaviors which, taken together, make it easier for users to read long, possibly complex documents. 
 
-Two things make web publications different from the “ordinary” web we know and love. One is that a web publication may consist of multiple resources that form a logical whole. Moby-Dick could consist of 136 HTML files in a specified order, but it’s still a single work. So searching should search all 136 chapters.
+Two things make web publications different from the “ordinary” web we know and love. First, a web publication may consist of multiple resources that form a logical whole. Moby-Dick could consist of 136 HTML files in a specified order, but it’s still a single work. So searching should search all 136 chapters.
 
 More importantly, users have a set of expectations about how such content should be presented in order to make it easy to read and understand. Users need to personalize the presentation, using the font and font size that make it easiest for them to read. They want it to be easy to go to the next chapter without interrupting the reading experience by hunting for a link to click. They might need a high- or low-contrast version of the content. They want to read while offline.
 
@@ -19,7 +19,7 @@ Thus the goal of web publications is to provide the information necessary to pro
  
 - Provide a mechanism for defining a collection of web resources as a publication 
  
-- Provide a mechanism for ascribing descriptive metadata to the collection of web resources.
+- Provide a mechanism for ascribing descriptive metadata to a collection of web resources.
 
 - Provide a mechanism for defining an ordering of the resources in a publication
 
@@ -29,28 +29,24 @@ Thus the goal of web publications is to provide the information necessary to pro
  
 ## Non-goals
 
- - Issues of layout, such as pagination
+ - Issues of layout, such as pagination or achieving effects similar to EPUB's fixed layout. 
  
  - Extending the DOM to include collections of document elements 
- 
- - The equivalent of fixed-layout publications in EPUB
- 
- - The equivalent of multiple-rendition publications in EPUB
  
  - DRM
  
 ## Basic design
 
-A web publication must have an <i>entry page</i>, which the HTML document returned by the URL of the publication. This page must have either a link to the manifest, or an embedded manifest. 
+A web publication must have an <i>entry page</i>, which the HTML document returned by the URL of the publication. This page must have either a link to the manifest (`<link rel="publication" href="manifest.json">`, or an embedded manifest. 
 
 A “manifest” is a list of the passengers or cargo on a ship. For web publications, a manifest lists the constituents of the publication—all the HTML files, stylesheets, images, scripts, etc.—needed to create the whole. It further describes the sequence of primary resources, so that we know that chapter-02.html comes after chapter-01.html. In EPUB we called this list the "spine"; for web publications it's now the `readingOrder`. 
 
 The manifest is also the natural location for metadata that applies to the whole publication, rather than just one of the constituents. The metadata vocabulary is based on schema.org; the entire manifest is serialized as JSON-LD. 
 
 
-## Example
+## Example Manifest
 
-Here's a simple example, for a tiny version of *Moby-Dick* with only a few HTML files:
+Here's a simple example of a web publication manifest, for a tiny version of *Moby-Dick* with only a few HTML files:
 
 ```json
 {
@@ -149,6 +145,20 @@ Once again, web publications use an explicit list outside of the content itself,
 
 Web publication metadata is expressed in the manifest.
 
+### 4. Obtaining a manifest
+
+The spec has two ways of getting to a manifest from the entry page of the publication.
+
+1. Link to the manifest from html
+
+```html
+<link rel="publication" href="manifest.json">
+```
+
+> Note: If you have more than one link to the manifest, the first one will be used.
+
+
+2. It's possible to embed the manifest in a `script` element in the HTML entry page. Among other things, this makes it possible to have a single-resource web publication. Some people think the manifest [should be required to be embedded](https://github.com/w3c/wpub/issues/327) in the entry page.
 
 
 ### Relationship to Web Application Manifest
@@ -165,18 +175,6 @@ The Web Publication Manifest appears to be very similar to the Web Application M
 But note that the [TAG has spoken](https://github.com/w3c/wpub/issues/32#issuecomment-362273649) in favor of using WAM. 
 
 
-### Linking to a manifest
-
-To link to a manifest, use the [HTML](https://www.w3.org/TR/appmanifest/#dfn-link-element) `link` element with the `rel` attribute set to `publication`:
-
-```html
-<link rel="publication" href="manifest.json">
-```
-
-> Note: If you have more than one link to the manifest, the first one will be used.
-
-It's possible to embed a manifest in a `script` element in HTML. Among other things, this makes it possible to have a single-resource web publication. Some people think the manifest [should be required to be embedded](https://github.com/w3c/wpub/issues/327) in the HTML document at the URL of the publication.
-
 
 ## Launching a web publication
 
@@ -192,25 +190,15 @@ The process of launching a web publication starts with a user navigating to a re
 > Issue: in Web App Manifest, the `document` is explicitly part of a top-level browsing context. Is this necessary?
 
 
-### Obtaining a manifest
+## The User Experience
 
-> Issue: If web publications use a different manifest than the web app manifest, how are they distinguished?
+Reading something that takes a day or a week rather than a few minutes influences what sort of user experience is best for publications. 
 
-This section just talks about how user agents process the manifest. It's of no interest to civilians.
-
-> Issue: what is our analog to start url?
-
-
-## Navigation
-
-Users need to find their way around all the content in a web publication. This involves everything from “turning the page” to finding a table of contents.
 
 ### Moving through the default reading order
 
 
 A web publication has a default reading order, and it should be easy for the reader to see everything in sequence. A user agent must provide means to go to the previous or next resource in the default reading order. 
-
-
 
 
 ### Accessing the table of contents
