@@ -1,8 +1,10 @@
 # An Informal Guide to Web Publications
 
-## Introduction
+The unanswered question:
 
 > is the goal of this group to make a new packaging format for specialist book reading software and devices, or is it to obtain first class support for missing book-related features in the web platform as a whole?
+
+## Introduction
 
 What is a web publication? A web publication is not a single thing, but rather a loose collection of behaviors which, taken together, make it easier for users to read long, possibly complex documents. 
 
@@ -21,11 +23,15 @@ Thus the goal of web publications is to provide the information necessary to pro
 
 - Provide a mechanism for defining an ordering of the resources in a publication
 
+- Describe the affordances needed for reading publications on the web
+
  
  
 ## Non-goals
 
  - Issues of layout, such as pagination
+ 
+ - Extending the DOM to include collections of document elements 
  
  - The equivalent of fixed-layout publications in EPUB
  
@@ -35,11 +41,11 @@ Thus the goal of web publications is to provide the information necessary to pro
  
 ## Basic design
 
-A web publication must have an "entry page," which the HTML document returned by the URL of the publication. This entry page must have either a link to the manifest, or an embedded manifest. 
+A web publication must have an <i>entry page</i>, which the HTML document returned by the URL of the publication. This page must have either a link to the manifest, or an embedded manifest. 
 
-A “manifest” is a list of the passengers or cargo on a ship. We want a list of the components of a web publication—all the HTML files, stylesheets, images, scripts, etc.—needed to create the whole. We need a special list of the files that go in a particular order. In EPUB we called this the "spine". We call this the `readingOrder`. 
+A “manifest” is a list of the passengers or cargo on a ship. For web publications, a manifest lists the constituents of the publication—all the HTML files, stylesheets, images, scripts, etc.—needed to create the whole. It further describes the sequence of primary resources, so that we know that chapter-02.html comes after chapter-01.html. In EPUB we called this list the "spine"; for web publications it's now the `readingOrder`. 
 
-In order to placate the web developers who seemingly rule the world, the manifest is expressed as a JSON file. The manifest is also a natural location for metadata that applies to the whole publication, rather than just one of the constituents. 
+The manifest is also the natural location for metadata that applies to the whole publication, rather than just one of the constituents. The metadata vocabulary is based on schema.org; the entire manifest is serialized as JSON-LD. 
 
 
 ## Example
@@ -100,30 +106,54 @@ Here's a simple example, for a tiny version of *Moby-Dick* with only a few HTML 
 
 ```
 
-`readingOrder` defines the sequence of resources that form the publication. `resources` enumerates all the other resources that are required to render the publication. Schema.org is used for most publication metadata. 
+Note that `readingOrder` defines the sequence of primary resources that form the publication. `resources` enumerates all the other resources that are required to render the publication. 
 
 ## Design choices
 
-### Structural
 
-The key questions are [1] identifying which resources form the publication and [2] defining an ordering of primary resources. 
+The key questions are [1] identifying the "bounds" of the publication, [2] defining the ordering of the primary resources, and [3] figuring out how to express metadata for the publication as a whole. 
 
-One possibility is **transclusion**, having a single resource which contains all the other resources. XML has often used such an approach, and it can be expressed in HTML in several ways, from HTML imports to iframes.
+### 1. What's part of the publication?
 
-Membership in a publication could also be defined using `scope`, as WAM does. 
+- The [Web Application Manifest spec](https://w3c.github.io/manifest/) uses `scope` to define the extent of a web application. 
 
-The PWG has decided to use a different approach, using lists linked from (or embedded in) HTML to both identify the consituents of a publication and define an ordering. In EPUB such information was defined in a "package" file and serialized in XML. As mentioned above, WPUB uses a "manifest" file which is serialized as JSON-LD. 
+- Every component of an EPUB publication must be listed in an XML package file.
+
+- Web sites do not define their boundaries.
+
+- XML sometimes uses the idea of *transclusion*: having a single resource represent the whole but containing pointers to the constituent sub-resources. This concept can also be realized in HTML using iframes, HTML imports, etc. 
+
+The web publications spec has essentially adopted EPUB's approach, with an explicit list of resources. Anything that is not part of the `resources` or `readingOrder` manifest members is considered to be outside the web publication. 
+
+### 2. Sequence of primary resources
+
+- HTML can express ordering of resources via `rel=prev` and `rel=next`, but these do not have UI support from the browsers (with notably rare exceptions).
+
+- HTML can also express an ordered list of links with the `nav` element. 
+
+- Transclusion can also define an ordering of the transcluded components. 
+
+- EPUB uses the `spine` element in the XML package file to determine a primary reading order.
+
+Once again, web publications use an explicit list outside of the content itself, via the `readingOrder` member of the manifest. 
+
+### 3. Metadata
+
+- EPUB includes metadata in the XML package file
+
+- There are many ways of embedding metadata in individual HTML files
+
+- Metadata about a web application can be expressed in the web application manifest file. 
+
+- With transclusion, one could define metadata in the containing file to apply to the whole.
+
+Web publication metadata is expressed in the manifest.
 
 
-#### Exhaustive lists of resources
-
-Web pages, web sites, and web applications typically don't include a list of referenced resources, like images, stylesheets, and fonts. EPUB does require such an exhaustive list. The argument has been that offline use cases require such a list, to be provided to a service worker, although counterexamples exist. 
 
 ### Relationship to Web Application Manifest
 
-The Web Publication Manifest appears to be very similar to the Web Application Manifest. Both are JSON files that are linked to from HTML, and provide metadata about a composite resource. Several arguments have been made against using WAM. See also [this](https://github.com/w3c/wpub/wiki/Options-for-Processing-a-Manifest) and [this](https://github.com/w3c/wpub/issues/32). But note that the [TAG has spoken](https://github.com/w3c/wpub/issues/32#issuecomment-362273649)!
-
-
+The Web Publication Manifest appears to be very similar to the Web Application Manifest. Both are JSON files that are linked to from HTML, and provide metadata about a composite resource. Several [arguments](https://github.com/w3c/wpub/wiki/Options-for-Processing-a-Manifest) [have](https://github.com/w3c/wpub/issues/32) been made against using WAM.
 
 1. WP use cases are orthogonal to those of WAM. Nothing is stopping a creator of a web publication from also using a web application manifest, if the publication author desires for the publication to be installable, etc. 
 
@@ -131,6 +161,8 @@ The Web Publication Manifest appears to be very similar to the Web Application M
 
 3. Web publications are fundamentally different from web apps, as the goal is for the user agent to provide the user interface. 
 
+
+But note that the [TAG has spoken](https://github.com/w3c/wpub/issues/32#issuecomment-362273649) in favor of using WAM. 
 
 
 ### Linking to a manifest
