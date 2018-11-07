@@ -37,7 +37,7 @@ Thus the goal of web publications is to provide the information necessary to pro
  
 ## Basic design
 
-A web publication must have an <i>entry page</i>, which the HTML document returned by the URL of the publication. This page must have either a link to the manifest (`<link rel="publication" href="manifest.json">`, or an embedded manifest. 
+A web publication must have an <i>entry page</i>, which the HTML document returned by the URL of the publication. This page must have either a link to the manifest (`<link rel="publication" href="manifest.json">`, or an [embedded](https://github.com/w3c/wpub/issues/327) manifest. 
 
 A “manifest” is a list of the passengers or cargo on a ship. For web publications, a manifest lists the constituents of the publication—all the HTML files, stylesheets, images, scripts, etc.—needed to create the whole. It further describes the sequence of primary resources, so that we know that chapter-02.html comes after chapter-01.html. In EPUB we called this list the "spine"; for web publications it's now the `readingOrder`. 
 
@@ -83,19 +83,19 @@ Here's a simple example of a web publication manifest, for a tiny version of *Mo
         },{
             "type": "PublicationLink",
             "url": "fonts/STIXGeneral.otf",
-            "encodingFormat": "application/vnd.ms-opentype"
+            "encodingFormat": "font/otf"
         },{
             "type": "PublicationLink",
             "url": "fonts/STIXGeneralBol.otf",
-            "encodingFormat": "application/vnd.ms-opentype"
+            "encodingFormat": "font/otf"
         },{
             "type": "PublicationLink",
             "url": "fonts/STIXGeneralBolIta.otf",
-            "encodingFormat": "application/vnd.ms-opentype"
+            "encodingFormat": "font/otf"
         },{
             "type": "PublicationLink",
             "url": "fonts/STIXGeneralItalic.otf",
-            "encodingFormat": "application/vnd.ms-opentype"
+            "encodingFormat": "font/otf"
         }
     ]
 }
@@ -117,7 +117,7 @@ The key questions are [1] identifying the "bounds" of the publication, [2] defin
 
 - Web sites do not define their boundaries.
 
-- XML sometimes uses the idea of *transclusion*: having a single resource represent the whole but containing pointers to the constituent sub-resources. This concept can also be realized in HTML using iframes, HTML imports, etc. 
+- XML sometimes uses the idea of *transclusion*, where the contents of other documents can be incorporated into a parent document based on hypertext references. This concept can also be realized in HTML using iframes, HTML imports, custom elements, etc. 
 
 The web publications spec has essentially adopted EPUB's approach, with an explicit list of resources. Anything that is not part of the `resources` or `readingOrder` manifest members is considered to be outside the web publication. 
 
@@ -141,24 +141,11 @@ Once again, web publications use an explicit list outside of the content itself,
 
 - Metadata about a web application can be expressed in the web application manifest file. 
 
-- With transclusion, one could define metadata in the containing file to apply to the whole.
+- With transclusion, one could define metadata in the parent file to apply to the whole.
 
-Web publication metadata is expressed in the manifest.
-
-### 4. Obtaining a manifest
-
-The spec has two ways of getting to a manifest from the entry page of the publication.
-
-1. Link to the manifest from html
-
-```html
-<link rel="publication" href="manifest.json">
-```
-
-> Note: If you have more than one link to the manifest, the first one will be used.
+Web publication metadata is expressed in the manifest, using a vocabulary largely taken from schema.org. 
 
 
-2. It's possible to embed the manifest in a `script` element in the HTML entry page. Among other things, this makes it possible to have a single-resource web publication. Some people think the manifest [should be required to be embedded](https://github.com/w3c/wpub/issues/327) in the entry page.
 
 
 ### Relationship to Web Application Manifest
@@ -176,36 +163,28 @@ But note that the [TAG has spoken](https://github.com/w3c/wpub/issues/32#issueco
 
 
 
-## Launching a web publication
-
-
-> Issue: are web publications installed? What level of user consent is needed to invoke the additional functionality of a web publication beyond what a browser would typically offer?
-
-A web publication consists of web resources, but with some special behaviors. In order to provide those behaviors, a user agent or prollyfill must recognize that the resources form a web publication, and obtain the information describing the web publication from its manifest.
-
-The process of launching a web publication starts with a user navigating to a resource of the web publication which contains a link to the manifest. In this section, we will simply refer to this particular document as "document" for simplicity. 
-
-> Issue: how would "deep linking" work? What if some resources of the web publication do not have a link to a manifest?
-
-> Issue: in Web App Manifest, the `document` is explicitly part of a top-level browsing context. Is this necessary?
-
-
 ## The User Experience
 
 Reading something that takes a day or a week rather than a few minutes influences what sort of user experience is best for publications. 
 
 
-### Moving through the default reading order
+#### Navigation
+
+- Moving through the default reading order
+
+- Access to the table(s) of contents
+
+#### Personalization
+
+- ability to change font, font size, background color
+
+- night mode
+
+#### Offline
+
+- Web publications should function offline (Service Workers)
 
 
-A web publication has a default reading order, and it should be easy for the reader to see everything in sequence. A user agent must provide means to go to the previous or next resource in the default reading order. 
-
-
-### Accessing the table of contents
-
-A table of contents is critical for accessing and understanding the components of a web publication. A web publication **should** have a table of contents, with a `nav` element which **should** include entries for all main resources, at least.
-
-If a table of contents exists, the user agent **must** provide a way for the user to request the table of contents and have it displayed in some form. 
 
 
 
