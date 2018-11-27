@@ -7,7 +7,6 @@ What is a web publication? The spec says:
 
 > A Web Publication is a discoverable and identifiable collection of resources. Information about the Web Publication is expressed in a machine-readable document called a manifest, which is what enables user agents to understand the bounds of the Web Publication and the connection between its resources.
 
-
 Two things make web publications different from the “ordinary” web we know and love. First, a web publication may consist of multiple resources that form a logical whole. Moby-Dick might consist of 136 HTML files in a specified order, but it’s still a single work. So searching should search all 136 chapters.
 
 More importantly, users have a set of expectations about how such content should be presented in order to make it easy to read and understand. Users need to personalize the presentation, using the font and font size that make it easiest for them to read. They want it to be easy to go to the next chapter without interrupting the reading experience by hunting for a link to click. They might need a high- or low-contrast version of the content. They want to read while offline.
@@ -17,7 +16,9 @@ Thus the goal of web publications is to make these features ("affordances") avai
 ## Goals
 
  
-- Provide a mechanism for defining a collection of web resources as a publication 
+- Provide a mechanism for defining a collection of web resources as a publication
+
+ - The resources may be images (comics/manga) or audio files (audiobooks)
  
 - Provide a mechanism for ascribing descriptive metadata to a collection of web resources.
 
@@ -190,14 +191,19 @@ But note that the [TAG has spoken](https://github.com/w3c/wpub/issues/32#issueco
 
 ## The User Experience
 
-Reading something that takes a day or a week rather than a few minutes influences what sort of user experience works for publications. There is a formal [use cases and requirements document](https://w3c.github.io/dpub-pwp-ucr/).
+Reading something that takes a day or a week rather than a few minutes influences what sort of user experience works for the reader. We have a formal [use cases and requirements document](https://w3c.github.io/dpub-pwp-ucr/) in addition to lots of actual experience from ebook reading systems. Browsers have implemented "reading modes" to address some of these requirements. 
 
 
-#### Navigation
+#### Navigating
 
-- Moving through the default reading order
+- Easily move through the entire publication in order. In most ebook reading systems, a single gesture moves between pages and between sections. 
 
-- Access to the table(s) of contents
+- The table(s) of contents should always be available. It should be possible to quickly navigate anywhere in the publication. 
+
+- Retaining state. If I leave a publication while reading, I should be able to easily return to where I left off. Extra credit for implementing this across devices. 
+
+- I may have hundreds or thousands of publications. How can they be organized so I can find them? 
+
 
 #### Personalization
 
@@ -207,5 +213,15 @@ Reading something that takes a day or a week rather than a few minutes influence
 
 #### Offline
 
-- Web publications should function offline (Service Workers)
+- Web publications should function while offline (Service Workers)
+
+#### Annotation
+
+- it should be possible to bookmark, highlight, and annotate web publications
+
+- it should be possible to craft a URL to point anywhere within a publication
+
+#### Search
+
+- it should be possible to search the entire publication
 
