@@ -1,18 +1,18 @@
 # An Informal Guide to Web Publications
 
-The unanswered question:
-
-> is the goal of this group to make a new packaging format for specialist book reading software and devices, or is it to obtain first class support for missing book-related features in the web platform as a whole?
 
 ## Introduction
 
-What is a web publication? A web publication is not a single thing, but rather a loose collection of behaviors which, taken together, make it easier for users to read long, possibly complex documents. 
+What is a web publication? The spec says:
 
-Two things make web publications different from the “ordinary” web we know and love. First, a web publication may consist of multiple resources that form a logical whole. Moby-Dick could consist of 136 HTML files in a specified order, but it’s still a single work. So searching should search all 136 chapters.
+> A Web Publication is a discoverable and identifiable collection of resources. Information about the Web Publication is expressed in a machine-readable document called a manifest, which is what enables user agents to understand the bounds of the Web Publication and the connection between its resources.
+
+
+Two things make web publications different from the “ordinary” web we know and love. First, a web publication may consist of multiple resources that form a logical whole. Moby-Dick might consist of 136 HTML files in a specified order, but it’s still a single work. So searching should search all 136 chapters.
 
 More importantly, users have a set of expectations about how such content should be presented in order to make it easy to read and understand. Users need to personalize the presentation, using the font and font size that make it easiest for them to read. They want it to be easy to go to the next chapter without interrupting the reading experience by hunting for a link to click. They might need a high- or low-contrast version of the content. They want to read while offline.
 
-Thus the goal of web publications is to provide the information necessary to provide these features ("affordances") to readers. We hope that someday browsers will provide these features, but in the meantime we have to use scripting. That's OK, because we'll learn a lot from trying, and that will help the spec get better.
+Thus the goal of web publications is to make these features ("affordances") available to readers. We hope that someday browsers will provide these features, but in the meantime we have to use scripting. That's OK, because we'll learn a lot from trying, and that will help the spec get better.
 
 ## Goals
 
@@ -106,8 +106,17 @@ Note that `readingOrder` defines the sequence of primary resources that form the
 
 ## Design choices
 
+The unanswered question:
+
+> is the goal of this group to make a new packaging format for specialist book reading software and devices, or is it to obtain first class support for missing book-related features in the web platform as a whole?
+
+
 
 The key questions are [1] identifying the "bounds" of the publication, [2] defining the ordering of the primary resources, and [3] figuring out how to express metadata for the publication as a whole. 
+
+How you answer those questions depends to some extent on other choices. We say a web publication must have a URL that returns an HTML document with a link to the manifest. 
+
+
 
 ### 1. What's part of the publication?
 
@@ -115,9 +124,9 @@ The key questions are [1] identifying the "bounds" of the publication, [2] defin
 
 - Every component of an EPUB publication must be listed in an XML package file.
 
-- Web sites do not define their boundaries.
+- Web sites do not explicitly define their boundaries.
 
-- XML sometimes uses the idea of *transclusion*, where the contents of other documents can be incorporated into a parent document based on hypertext references. This concept can also be realized in HTML using iframes, HTML imports, custom elements, etc. 
+- XML sometimes uses the idea of *transclusion*, where the contents of other documents can be incorporated into a parent document based on hypertext references. This concept can also be realized in HTML using iframes, HTML imports, custom elements, etc. The working group has shown no interest in this approach. 
 
 ```html
 <html>
@@ -181,7 +190,7 @@ But note that the [TAG has spoken](https://github.com/w3c/wpub/issues/32#issueco
 
 ## The User Experience
 
-Reading something that takes a day or a week rather than a few minutes influences what sort of user experience is best for publications. 
+Reading something that takes a day or a week rather than a few minutes influences what sort of user experience works for publications. There is a formal [use cases and requirements document](https://w3c.github.io/dpub-pwp-ucr/).
 
 
 #### Navigation
@@ -199,22 +208,4 @@ Reading something that takes a day or a week rather than a few minutes influence
 #### Offline
 
 - Web publications should function offline (Service Workers)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
